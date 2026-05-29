@@ -1,0 +1,11 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.project.sourcePaths": [
+        "services/order-service/src/main/java",
+        "services/product-service/src/main/java",
+        "services/auth-service/src/main/java",
+        "services/api-gateway/src/main/java",
+        "services/discovery-service/src/main/java"
+    ],
+    "java.project.outputPath": "bin"
+}
