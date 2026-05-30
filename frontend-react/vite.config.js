@@ -10,6 +10,10 @@ export default defineConfig({
         target: "http://localhost:8082",
         changeOrigin: true
       },
+      "/api/auth": {
+        target: "http://localhost:8081",
+        changeOrigin: true
+      },
       "/api/categories": {
         target: "http://localhost:8082",
         changeOrigin: true
@@ -20,6 +24,10 @@ export default defineConfig({
       },
       "/api/deliveries": {
         target: "http://localhost:8085",
+        changeOrigin: true
+      },
+      "/api/notifications": {
+        target: "http://localhost:8084",
         changeOrigin: true
       },
       "/health/product": {

@@ -21,6 +21,12 @@ public class UserResponse {
 
     private String phone;
 
+    private String address;
+
+    private String role;
+
+    private String status;
+
     private Set<String> roles;
 
     private Boolean enabled;

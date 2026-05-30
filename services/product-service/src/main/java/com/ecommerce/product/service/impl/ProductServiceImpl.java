@@ -6,6 +6,7 @@ import com.ecommerce.product.dto.response.ProductResponse;
 import com.ecommerce.product.entity.Category;
 import com.ecommerce.product.entity.Inventory;
 import com.ecommerce.product.entity.Product;
+import com.ecommerce.product.entity.ProductImage;
 import com.ecommerce.product.exception.ProductNotFoundException;
 import com.ecommerce.product.mapper.ProductMapper;
 import com.ecommerce.product.repository.CategoryRepository;
@@ -46,6 +47,14 @@ public class ProductServiceImpl implements ProductService {
 
         product.setInventory(inventory);
 
+        if (request.getImageUrl() != null && !request.getImageUrl().isBlank()) {
+            ProductImage image = ProductImage.builder()
+                    .imageUrl(request.getImageUrl().trim())
+                    .product(product)
+                    .build();
+            product.setImages(List.of(image));
+        }
+
         Product savedProduct = productRepository.save(product);
 
         redisTemplate.delete(PRODUCT_LIST_CACHE);
@@ -67,6 +76,21 @@ public class ProductServiceImpl implements ProductService {
             Category category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new RuntimeException("Category not found with id: " + request.getCategoryId()));
             product.setCategory(category);
+        }
+
+        if (request.getImageUrl() != null) {
+            String imageUrl = request.getImageUrl().trim();
+            if (imageUrl.isBlank()) {
+                product.setImages(List.of());
+            } else if (product.getImages() == null || product.getImages().isEmpty()) {
+                ProductImage image = ProductImage.builder()
+                        .imageUrl(imageUrl)
+                        .product(product)
+                        .build();
+                product.setImages(List.of(image));
+            } else {
+                product.getImages().get(0).setImageUrl(imageUrl);
+            }
         }
 
         Product savedProduct = productRepository.save(product);

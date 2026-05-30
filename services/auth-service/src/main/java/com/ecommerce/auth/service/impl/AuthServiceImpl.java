@@ -12,6 +12,7 @@ import com.ecommerce.auth.entity.User;
 
 import com.ecommerce.auth.exception.AuthException;
 
+import com.ecommerce.auth.mapper.UserMapper;
 import com.ecommerce.auth.repository.RoleRepository;
 import com.ecommerce.auth.repository.UserRepository;
 
@@ -78,6 +79,10 @@ public class AuthServiceImpl implements AuthService {
 
         user.setFullName(request.getFullName());
 
+        user.setPhone(request.getPhone());
+
+        user.setAddress(request.getAddress());
+
         user.setPassword(
                 passwordEncoder.encode(
                         request.getPassword()
@@ -109,6 +114,7 @@ public class AuthServiceImpl implements AuthService {
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .tokenType("Bearer")
+                        .user(UserMapper.toResponse(user))
                         .build();
 
         return ApiResponse.<JwtResponse>builder()
@@ -137,11 +143,16 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken =
                 jwtProvider.generateRefreshToken(authentication);
 
+        User user = userRepository
+                .findByUsernameOrEmail(request.getUsernameOrEmail(), request.getUsernameOrEmail())
+                .orElseThrow(() -> new AuthException("User not found"));
+
         JwtResponse jwtResponse =
                 JwtResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .tokenType("Bearer")
+                        .user(UserMapper.toResponse(user))
                         .build();
 
         return ApiResponse.<JwtResponse>builder()

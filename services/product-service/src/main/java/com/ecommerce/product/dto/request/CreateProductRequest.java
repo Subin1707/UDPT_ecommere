@@ -16,4 +16,6 @@ public class CreateProductRequest {
     private Long categoryId;
 
     private Integer quantity;
+
+    private String imageUrl;
 }

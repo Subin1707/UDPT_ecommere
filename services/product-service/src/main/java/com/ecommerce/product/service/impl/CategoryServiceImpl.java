@@ -1,6 +1,7 @@
 package com.ecommerce.product.service.impl;
 
 import com.ecommerce.product.dto.request.CreateCategoryRequest;
+import com.ecommerce.product.dto.request.UpdateCategoryRequest;
 import com.ecommerce.product.dto.response.CategoryResponse;
 import com.ecommerce.product.entity.Category;
 import com.ecommerce.product.repository.CategoryRepository;
@@ -20,6 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse createCategory(CreateCategoryRequest request) {
         Category category = Category.builder()
                 .name(request.getName())
+                .description(request.getDescription())
                 .build();
 
         Category savedCategory = categoryRepository.save(category);
@@ -27,6 +29,24 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryResponse.builder()
                 .id(savedCategory.getId())
                 .name(savedCategory.getName())
+                .description(savedCategory.getDescription())
+                .build();
+    }
+
+    @Override
+    public CategoryResponse updateCategory(Long id, UpdateCategoryRequest request) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        category.setName(request.getName());
+        category.setDescription(request.getDescription());
+
+        Category savedCategory = categoryRepository.save(category);
+
+        return CategoryResponse.builder()
+                .id(savedCategory.getId())
+                .name(savedCategory.getName())
+                .description(savedCategory.getDescription())
                 .build();
     }
 
@@ -38,6 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
+                .description(category.getDescription())
                 .build();
     }
 
@@ -48,6 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .map(category -> CategoryResponse.builder()
                         .id(category.getId())
                         .name(category.getName())
+                        .description(category.getDescription())
                         .build())
                 .toList();
     }
