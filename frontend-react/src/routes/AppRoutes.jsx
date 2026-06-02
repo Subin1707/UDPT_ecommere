@@ -33,6 +33,16 @@ function canAccess(screen, role) {
   return (routeGroups[role] ?? []).some(([key]) => key === screen);
 }
 
+function loadCartItems() {
+  try {
+    const raw = localStorage.getItem("ecommerce_cart");
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function AppRoutes() {
   const { currentUser, login, registerCustomer, logout } = useAuth();
   const [screen, setScreen] = useState(currentUser ? landingScreenForRole(currentUser.role) : "login");
@@ -43,6 +53,8 @@ export default function AppRoutes() {
   const [deliveries, setDeliveries] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(1);
+  const [selectedOrderQuantity, setSelectedOrderQuantity] = useState(1);
+  const [checkoutCartProductId, setCheckoutCartProductId] = useState(null);
   const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -54,15 +66,22 @@ export default function AppRoutes() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingOrder, setEditingOrder] = useState(null);
   const [notice, setNotice] = useState("");
+  const [cartItems, setCartItems] = useState(loadCartItems);
 
   const selectedProduct = products.find((item) => item.id === selectedProductId) ?? products[0] ?? null;
   const selectedDelivery = deliveries.find((item) => item.id === selectedDeliveryId) ?? deliveries[0];
+  const cartProducts = useMemo(() => cartItems
+    .map((item) => {
+      const product = products.find((productItem) => Number(productItem.id) === Number(item.productId));
+      return product ? { product, quantity: item.quantity } : null;
+    })
+    .filter(Boolean), [cartItems, products]);
 
   const filteredProducts = useMemo(() => {
     const next = products.filter((product) => {
       const matchesQuery = product.name.toLowerCase().includes(query.toLowerCase());
-      const categoryName = product.category?.name ?? "";
-      const matchesCategory = categoryFilter === "all" || categoryName === categoryFilter;
+      const categoryId = product.category?.id != null ? String(product.category.id) : "";
+      const matchesCategory = categoryFilter === "all" || categoryId === String(categoryFilter);
       return matchesQuery && matchesCategory;
     });
 
@@ -123,6 +142,10 @@ export default function AppRoutes() {
   }, []);
 
   useEffect(() => {
+    localStorage.setItem("ecommerce_cart", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  useEffect(() => {
     if (!canAccess(screen, currentUser?.role)) {
       setScreen(currentUser ? landingScreenForRole(currentUser.role) : "login");
     }
@@ -179,20 +202,84 @@ export default function AppRoutes() {
   async function createOrder(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const productId = Number(form.get("productId"));
     const order = await orderService.create({
-      productId: Number(form.get("productId")),
+      productId,
       quantity: Number(form.get("quantity")),
       customerName: form.get("customerName")
     });
+    if (Number(checkoutCartProductId) === productId) {
+      setCartItems((items) => items.filter((item) => Number(item.productId) !== productId));
+      setCheckoutCartProductId(null);
+    }
     setNotice(`Đã tạo order #${order.id}. Kafka sẽ gửi sang Notification và Shipping.`);
     await refreshData();
     setScreen("trackOrder");
+  }
+
+  function addToCart(productId) {
+    const product = products.find((item) => Number(item.id) === Number(productId));
+    if (!product) return;
+
+    setCartItems((items) => {
+      const existing = items.find((item) => Number(item.productId) === Number(productId));
+      if (existing) {
+        return items.map((item) => Number(item.productId) === Number(productId)
+          ? { ...item, quantity: Math.min(Number(product.stock ?? 99), item.quantity + 1) }
+          : item);
+      }
+      return [...items, { productId: Number(productId), quantity: 1 }];
+    });
+    setNotice(`Đã thêm "${product.name}" vào giỏ hàng.`);
+    setScreen("cart");
+  }
+
+  function increaseCartItem(productId) {
+    const product = products.find((item) => Number(item.id) === Number(productId));
+    setCartItems((items) => items.map((item) => Number(item.productId) === Number(productId)
+      ? { ...item, quantity: Math.min(Number(product?.stock ?? 99), item.quantity + 1) }
+      : item));
+  }
+
+  function decreaseCartItem(productId) {
+    setCartItems((items) => items
+      .map((item) => Number(item.productId) === Number(productId)
+        ? { ...item, quantity: item.quantity - 1 }
+        : item)
+      .filter((item) => item.quantity > 0));
+  }
+
+  function removeCartItem(productId) {
+    setCartItems((items) => items.filter((item) => Number(item.productId) !== Number(productId)));
+    setNotice("Đã xóa sản phẩm khỏi giỏ hàng.");
+  }
+
+  function checkoutCartItem(productId) {
+    const cartItem = cartItems.find((item) => Number(item.productId) === Number(productId));
+    setSelectedProductId(Number(productId));
+    setSelectedOrderQuantity(Number(cartItem?.quantity) || 1);
+    setCheckoutCartProductId(Number(productId));
+    setScreen("createOrder");
+  }
+
+  function startOrder(productId, quantity = 1) {
+    if (productId) setSelectedProductId(Number(productId));
+    setSelectedOrderQuantity(Number(quantity) || 1);
+    setCheckoutCartProductId(null);
+    setScreen("createOrder");
   }
 
   async function updateDelivery(id, status) {
     const delivery = await shippingService.updateStatus(id, { status, shipperName: "Tran Van Shipper" });
     setSelectedDeliveryId(delivery.id);
     setNotice(`Delivery #${delivery.id} da cap nhat thanh ${delivery.status}.`);
+    await refreshData();
+  }
+
+  async function updateDeliveryLocation(id, payload) {
+    const delivery = await shippingService.updateLocation(id, payload);
+    setSelectedDeliveryId(delivery.id);
+    setNotice(`Đã cập nhật vị trí shipper cho delivery #${delivery.id}.`);
     await refreshData();
   }
 
@@ -314,14 +401,18 @@ export default function AppRoutes() {
 
   if (!currentUser) {
     return (
-      <div className="app-shell">
-        <aside className="sidebar">
-          <div className="brand">
+      <div className="public-auth-shell">
+        <header className="public-auth-header">
+          <div className="brand public-auth-brand">
             <div className="brand-mark">ED</div>
             <div><strong>Ecommerce</strong><span>Distributed UI</span></div>
           </div>
-        </aside>
-        <main className="main">
+          <div className="public-auth-status">
+            <span>Product Service</span>
+            <strong>{health.product ?? "CHECKING"}</strong>
+          </div>
+        </header>
+        <main className="main public-auth-main">
           {notice && <div className="notice">{notice}</div>}
           {authScreen === "landing" && (
             <PublicLandingPage
@@ -348,7 +439,9 @@ export default function AppRoutes() {
     orders,
     deliveries,
     selectedProduct,
+    selectedOrderQuantity,
     selectedDelivery,
+    cartProducts,
     filteredProducts,
     query,
     categoryFilter,
@@ -370,7 +463,14 @@ export default function AppRoutes() {
     setSort,
     setOrderStatus,
     createOrder,
+    addToCart,
+    increaseCartItem,
+    decreaseCartItem,
+    removeCartItem,
+    checkoutCartItem,
+    startOrder,
     updateDelivery,
+    updateDeliveryLocation,
     createCategory,
     createProduct,
     editCategory: setEditingCategory,
@@ -388,7 +488,16 @@ export default function AppRoutes() {
     deleteUser,
     openProduct(id) {
       setSelectedProductId(id);
+      setSelectedOrderQuantity(1);
       setScreen("productDetail");
+    },
+    openCatalogAll() {
+      setCategoryFilter("all");
+      setScreen("catalog");
+    },
+    openCatalogByCategory(categoryId) {
+      setCategoryFilter(String(categoryId));
+      setScreen("catalog");
     },
     openDelivery(id) {
       setSelectedDeliveryId(id);

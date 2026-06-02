@@ -12,6 +12,7 @@ export default function AdminRoutes({ screen, data, actions }) {
     return (
       <CategoryManagementPage
         categories={data.categories}
+        products={data.products}
         editingCategory={data.editingCategory}
         onCreate={actions.createCategory}
         onEdit={actions.editCategory}

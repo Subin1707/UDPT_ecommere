@@ -1,6 +1,7 @@
 package com.ecommere.shipping.controller;
 
 import com.ecommere.shipping.dto.DeliveryStatusUpdateRequest;
+import com.ecommere.shipping.dto.DeliveryLocationUpdateRequest;
 import com.ecommere.shipping.entity.Delivery;
 import com.ecommere.shipping.service.ShippingService;
 import java.util.List;
@@ -37,5 +38,13 @@ public class ShippingController {
             @RequestBody DeliveryStatusUpdateRequest request
     ) {
         return shippingService.updateDeliveryStatus(id, request);
+    }
+
+    @PutMapping("/{id}/location")
+    public Delivery updateDeliveryLocation(
+            @PathVariable Long id,
+            @RequestBody DeliveryLocationUpdateRequest request
+    ) {
+        return shippingService.updateDeliveryLocation(id, request);
     }
 }

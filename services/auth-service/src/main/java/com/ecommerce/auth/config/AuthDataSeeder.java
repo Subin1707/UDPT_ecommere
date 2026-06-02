@@ -24,20 +24,63 @@ public class AuthDataSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         Role adminRole = createRoleIfMissing(RoleName.ROLE_ADMIN);
-        createRoleIfMissing(RoleName.ROLE_CUSTOMER);
-        createRoleIfMissing(RoleName.ROLE_SHIPPER);
+        Role customerRole = createRoleIfMissing(RoleName.ROLE_CUSTOMER);
+        Role shipperRole = createRoleIfMissing(RoleName.ROLE_SHIPPER);
 
-        if (!userRepository.existsByUsername("admin")) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setFullName("System Administrator");
-            admin.setEmail("admin@ecommerce.local");
-            admin.setPhone("0900000001");
-            admin.setAddress("Head Office");
-            admin.setEnabled(true);
-            admin.setRoles(Set.of(adminRole));
-            userRepository.save(admin);
+        createUserIfMissing(
+                "admin",
+                "admin123",
+                "Quản trị hệ thống",
+                "admin@ecommerce.local",
+                "0900000001",
+                "Văn phòng điều hành Ecommerce",
+                adminRole
+        );
+
+        createUserIfMissing(
+                "customer",
+                "customer123",
+                "Phạm Văn Hoàng",
+                "customer@ecommerce.local",
+                "0901234567",
+                "12 Nguyễn Trãi, Quận 1, TP. Hồ Chí Minh",
+                customerRole
+        );
+
+        createUserIfMissing(
+                "shipper",
+                "shipper123",
+                "Nguyễn Thị Kiều Trinh",
+                "shipper@ecommerce.local",
+                "0907654321",
+                "Khu vực giao hàng trung tâm",
+                shipperRole
+        );
+
+        for (int i = 1; i <= 24; i++) {
+            String suffix = String.format("%02d", i);
+            createUserIfMissing(
+                    "customer" + suffix,
+                    "customer123",
+                    "Khách hàng mẫu " + suffix,
+                    "customer" + suffix + "@ecommerce.local",
+                    "09100000" + suffix,
+                    "Địa chỉ khách hàng mẫu " + suffix + ", TP. Hồ Chí Minh",
+                    customerRole
+            );
+        }
+
+        for (int i = 1; i <= 23; i++) {
+            String suffix = String.format("%02d", i);
+            createUserIfMissing(
+                    "shipper" + suffix,
+                    "shipper123",
+                    "Shipper mẫu " + suffix,
+                    "shipper" + suffix + "@ecommerce.local",
+                    "09200000" + suffix,
+                    "Khu vực giao hàng mẫu " + suffix,
+                    shipperRole
+            );
         }
     }
 
@@ -48,5 +91,30 @@ public class AuthDataSeeder implements CommandLineRunner {
                     role.setName(roleName);
                     return roleRepository.save(role);
                 });
+    }
+
+    private void createUserIfMissing(
+            String username,
+            String password,
+            String fullName,
+            String email,
+            String phone,
+            String address,
+            Role role
+    ) {
+        if (userRepository.existsByUsername(username)) {
+            return;
+        }
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setAddress(address);
+        user.setEnabled(true);
+        user.setRoles(Set.of(role));
+        userRepository.save(user);
     }
 }

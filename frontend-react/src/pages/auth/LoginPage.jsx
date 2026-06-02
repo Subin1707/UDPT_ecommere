@@ -1,21 +1,43 @@
-import { useRef } from "react";
-import { ArrowRight, Lock, LogIn, ShieldCheck, Sparkles, Truck, User, UserRoundCheck } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowRight, CheckCircle2, Database, Lock, LogIn, ShieldCheck, Sparkles, Truck, User, UserRoundCheck } from "lucide-react";
 
 const accounts = [
-  { role: "Admin", username: "admin", password: "admin123", icon: ShieldCheck },
-  { role: "Customer", username: "customer", password: "customer123", icon: UserRoundCheck },
-  { role: "Shipper", username: "shipper", password: "shipper123", icon: Truck }
+  {
+    role: "Admin",
+    username: "admin",
+    password: "admin123",
+    icon: ShieldCheck,
+    note: "Quản trị sản phẩm, đơn hàng, shipper và monitoring."
+  },
+  {
+    role: "Customer",
+    username: "customer",
+    password: "customer123",
+    icon: UserRoundCheck,
+    note: "Xem sản phẩm, đặt hàng và theo dõi đơn hàng."
+  },
+  {
+    role: "Shipper",
+    username: "shipper",
+    password: "shipper123",
+    icon: Truck,
+    note: "Nhận đơn giao và cập nhật trạng thái vận chuyển."
+  }
 ];
 
 export default function LoginPage({ onLogin, onRegister }) {
   const formRef = useRef(null);
+  const [selectedRole, setSelectedRole] = useState(accounts[1]);
 
   function fillAccount(account) {
     const form = formRef.current;
     if (!form) return;
+    setSelectedRole(account);
     form.elements.username.value = account.username;
     form.elements.password.value = account.password;
   }
+
+  const SelectedIcon = selectedRole.icon;
 
   return (
     <section className="auth-layout auth-wow">
@@ -39,27 +61,39 @@ export default function LoginPage({ onLogin, onRegister }) {
         </div>
       </div>
 
-      <div className="auth-card panel auth-glass-card">
-        <div className="auth-card-head">
+      <div className="auth-card panel auth-glass-card auth-login-card">
+        <div className="auth-card-head login-card-head">
           <span className="auth-badge"><Sparkles size={15} /> Secure Access</span>
           <p className="eyebrow">Đăng nhập</p>
           <h2>Chào mừng trở lại</h2>
           <span>Tài khoản được xác thực từ database và điều hướng theo đúng quyền.</span>
         </div>
 
-        <form ref={formRef} className="form-panel" onSubmit={onLogin}>
+        <div className="login-role-preview">
+          <div className="login-role-icon">
+            <SelectedIcon size={24} />
+          </div>
+          <div>
+            <span>Vai trò đang chọn</span>
+            <strong>{selectedRole.role}</strong>
+            <p>{selectedRole.note}</p>
+          </div>
+          <CheckCircle2 size={22} />
+        </div>
+
+        <form ref={formRef} className="form-panel login-form-panel" onSubmit={onLogin}>
           <label>
             Username
-            <div className="input-icon auth-input">
+            <div className="input-icon auth-input premium-input">
               <User size={18} />
-              <input name="username" placeholder="admin" autoComplete="username" required />
+              <input name="username" placeholder="customer" autoComplete="username" required />
             </div>
           </label>
           <label>
             Password
-            <div className="input-icon auth-input">
+            <div className="input-icon auth-input premium-input">
               <Lock size={18} />
-              <input name="password" type="password" placeholder="admin123" autoComplete="current-password" required />
+              <input name="password" type="password" placeholder="customer123" autoComplete="current-password" required />
             </div>
           </label>
           <div className="auth-options">
@@ -78,12 +112,20 @@ export default function LoginPage({ onLogin, onRegister }) {
           </button>
         </form>
 
-        <div className="sample-accounts sample-account-grid">
-          <p>Tài khoản test nhanh</p>
+        <div className="sample-accounts sample-account-grid premium-sample-accounts">
+          <div className="sample-head">
+            <div>
+              <p>Tài khoản test nhanh</p>
+              <span>Chọn một vai trò để tự điền thông tin đăng nhập.</span>
+            </div>
+            <Database size={20} />
+          </div>
           {accounts.map((account) => {
             const Icon = account.icon;
+            const active = selectedRole.role === account.role;
+
             return (
-              <button key={account.role} type="button" onClick={() => fillAccount(account)}>
+              <button className={active ? "active" : ""} key={account.role} type="button" onClick={() => fillAccount(account)}>
                 <Icon size={18} />
                 <span>{account.role}</span>
                 <code>{account.username} / {account.password}</code>
@@ -92,8 +134,9 @@ export default function LoginPage({ onLogin, onRegister }) {
           })}
         </div>
 
-        <button className="secondary-button auth-wide" type="button" onClick={onRegister}>
+        <button className="secondary-button auth-wide register-entry-button" type="button" onClick={onRegister}>
           Đăng ký tài khoản khách hàng
+          <ArrowRight size={17} />
         </button>
       </div>
     </section>

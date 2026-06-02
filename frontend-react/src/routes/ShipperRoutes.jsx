@@ -14,8 +14,14 @@ export default function ShipperRoutes({ screen, data, actions }) {
   }
 
   if (screen === "deliveryDetail") {
-    return <DeliveryDetailPage delivery={data.selectedDelivery} onStatus={actions.updateDelivery} />;
+    return (
+      <DeliveryDetailPage
+        delivery={data.selectedDelivery}
+        onStatus={actions.updateDelivery}
+        onLocation={actions.updateDeliveryLocation}
+      />
+    );
   }
 
-  return <ShipperDashboardPage stats={data.deliveryStats} />;
+  return <ShipperDashboardPage stats={data.deliveryStats} deliveries={data.deliveries} />;
 }

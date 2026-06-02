@@ -1,6 +1,7 @@
 package com.ecommere.shipping.service.impl;
 
 import com.ecommere.shipping.dto.DeliveryStatusUpdateRequest;
+import com.ecommere.shipping.dto.DeliveryLocationUpdateRequest;
 import com.ecommere.shipping.entity.Delivery;
 import com.ecommere.shipping.event.OrderCreatedEvent;
 import com.ecommere.shipping.repository.DeliveryRepository;
@@ -32,6 +33,10 @@ public class ShippingServiceImpl implements ShippingService {
         delivery.setCustomerName(event.getCustomerName());
         delivery.setShipperName("UNASSIGNED");
         delivery.setStatus("ASSIGNED");
+        delivery.setShipperLat(21.0285);
+        delivery.setShipperLng(105.8542);
+        delivery.setCustomerLat(21.0350);
+        delivery.setCustomerLng(105.8340);
         delivery.setCreatedAt(LocalDateTime.now());
         delivery.setUpdatedAt(LocalDateTime.now());
 
@@ -65,6 +70,18 @@ public class ShippingServiceImpl implements ShippingService {
         System.out.println("DELIVERY STATUS UPDATED: " + savedDelivery.getStatus());
 
         return savedDelivery;
+    }
+
+    @Override
+    public Delivery updateDeliveryLocation(Long id, DeliveryLocationUpdateRequest request) {
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Delivery not found with id: " + id));
+
+        delivery.setShipperLat(request.getShipperLat());
+        delivery.setShipperLng(request.getShipperLng());
+        delivery.setUpdatedAt(LocalDateTime.now());
+
+        return deliveryRepository.save(delivery);
     }
 
     @Override

@@ -8,4 +8,6 @@ import java.util.List;
 public interface NotificationEventRepository extends JpaRepository<NotificationEvent, Long> {
 
     List<NotificationEvent> findTop50ByOrderByCreatedAtDesc();
+
+    boolean existsByTypeAndOrderId(String type, Long orderId);
 }

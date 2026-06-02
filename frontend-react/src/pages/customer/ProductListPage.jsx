@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import ProductCard from "../../components/product/ProductCard.jsx";
 
-export default function ProductListPage({ products, categories, query, categoryFilter, sort, onQuery, onCategory, onSort, onProduct }) {
+export default function ProductListPage({ products, categories, query, categoryFilter, sort, onQuery, onCategory, onSort, onProduct, onAddToCart }) {
   return (
     <section>
       <div className="toolbar">
@@ -11,7 +11,7 @@ export default function ProductListPage({ products, categories, query, categoryF
         </div>
         <select value={categoryFilter} onChange={(event) => onCategory(event.target.value)}>
           <option value="all">Tất cả danh mục</option>
-          {categories.map((category) => <option key={category.id} value={category.name}>{category.name}</option>)}
+          {categories.map((category) => <option key={category.id} value={String(category.id)}>{category.name}</option>)}
         </select>
         <select value={sort} onChange={(event) => onSort(event.target.value)}>
           <option value="featured">Mặc định</option>
@@ -20,7 +20,11 @@ export default function ProductListPage({ products, categories, query, categoryF
           <option value="stock">Tồn kho nhiều</option>
         </select>
       </div>
-      <div className="product-grid">{products.map((product) => <ProductCard key={product.id} product={product} onProduct={onProduct} />)}</div>
+      <div className="product-grid">
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} onProduct={onProduct} onAddToCart={onAddToCart} />
+        ))}
+      </div>
     </section>
   );
 }

@@ -50,7 +50,7 @@ export const defaultProducts = [
   },
   {
     id: 3,
-    name: "Ban phim co",
+    name: "Bàn phím cơ",
     description: "Switch tactile, LED trắng",
     price: 1290000,
     stock: 18,
@@ -82,6 +82,7 @@ export const routeGroups = {
     ["home", "Trang chủ", "Home"],
     ["catalog", "Sản phẩm", "ShoppingBag"],
     ["productDetail", "Chi tiết", "Package"],
+    ["cart", "Giỏ hàng", "ShoppingCart"],
     ["createOrder", "Đặt hàng", "ClipboardList"],
     ["trackOrder", "Theo dõi đơn", "CheckCircle2"]
   ],

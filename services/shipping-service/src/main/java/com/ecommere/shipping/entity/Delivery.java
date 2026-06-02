@@ -29,6 +29,14 @@ public class Delivery {
 
     private String status;
 
+    private Double shipperLat;
+
+    private Double shipperLng;
+
+    private Double customerLat;
+
+    private Double customerLng;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -103,6 +111,38 @@ public class Delivery {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Double getShipperLat() {
+        return shipperLat;
+    }
+
+    public void setShipperLat(Double shipperLat) {
+        this.shipperLat = shipperLat;
+    }
+
+    public Double getShipperLng() {
+        return shipperLng;
+    }
+
+    public void setShipperLng(Double shipperLng) {
+        this.shipperLng = shipperLng;
+    }
+
+    public Double getCustomerLat() {
+        return customerLat;
+    }
+
+    public void setCustomerLat(Double customerLat) {
+        this.customerLat = customerLat;
+    }
+
+    public Double getCustomerLng() {
+        return customerLng;
+    }
+
+    public void setCustomerLng(Double customerLng) {
+        this.customerLng = customerLng;
     }
 
     public LocalDateTime getCreatedAt() {
