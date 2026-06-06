@@ -1,0 +1,27 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.6)
+
+2026-06-04T18:21:05.577+07:00  INFO 14788 --- [shipping-service] [           main] c.e.shipping.ShippingServiceApplication  : Starting ShippingServiceApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 14788 (E:\ecommerce-distributed-system\services\shipping-service\target\shipping-service-0.0.1-SNAPSHOT.jar started by fpt in E:\ecommerce-distributed-system\services\shipping-service)
+2026-06-04T18:21:05.592+07:00  INFO 14788 --- [shipping-service] [           main] c.e.shipping.ShippingServiceApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-06-04T18:21:05.596+07:00 DEBUG 14788 --- [shipping-service] [           main] o.s.boot.SpringApplication               : Loading source class com.ecommere.shipping.ShippingServiceApplication
+2026-06-04T18:21:05.808+07:00 DEBUG 14788 --- [shipping-service] [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext@64dafeed
+2026-06-04T18:21:09.678+07:00  INFO 14788 --- [shipping-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-04T18:21:09.740+07:00 DEBUG 14788 --- [shipping-service] [           main] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.ecommere.shipping'. Automatic @Repository and @Entity scanning is enabled.
+2026-06-04T18:21:10.052+07:00  INFO 14788 --- [shipping-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 344 ms. Found 1 JPA repository interface.
+2026-06-04T18:21:11.645+07:00  INFO 14788 --- [shipping-service] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=5a147f45-1070-3a67-b95a-c8b18b0482ae
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 1224736 bytes. Error detail: Chunk::new
+# An error report file with more information is saved as:
+# E:\ecommerce-distributed-system\services\shipping-service\hs_err_pid14788.log
+[thread 22768 also had an error]
+#
+# Compiler replay data is saved as:
+# E:\ecommerce-distributed-system\services\shipping-service\replay_pid14788.log

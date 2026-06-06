@@ -1,0 +1,10 @@
+#
+[thread 5396 also had an error]
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 32744 bytes. Error detail: Chunk::new
+# An error report file with more information is saved as:
+# E:\ecommerce-distributed-system\services\product-service\hs_err_pid14096.log
+[INFO] Scanning for projects...
+#
+# Compiler replay data is saved as:
+# E:\ecommerce-distributed-system\services\product-service\replay_pid14096.log

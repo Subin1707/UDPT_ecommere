@@ -1,0 +1,16 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.ecommerce:auth-service >---------------------
+[INFO] Building auth-service 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.4.5:run (default-cli) > test-compile @ auth-service >>>
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 1021376 bytes. Error detail: Chunk::new
+# An error report file with more information is saved as:
+# E:\ecommerce-distributed-system\services\auth-service\hs_err_pid24516.log
+#
+# Compiler replay data is saved as:
+# E:\ecommerce-distributed-system\services\auth-service\replay_pid24516.log

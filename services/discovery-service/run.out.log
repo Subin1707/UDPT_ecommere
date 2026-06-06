@@ -1,0 +1,50 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------< com.ecommerce:discovery-service >-------------------
+[INFO] Building discovery-service 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.4.5:run (default-cli) > test-compile @ discovery-service >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ discovery-service ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ discovery-service ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ discovery-service ---
+[INFO] skip non existing resourceDirectory E:\ecommerce-distributed-system\services\discovery-service\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ discovery-service ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.4.5:run (default-cli) < test-compile @ discovery-service <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.4.5:run (default-cli) @ discovery-service ---
+[INFO] Attaching agents: []
+
+2026-06-04T17:08:23.842+07:00  INFO 22756 --- [discovery-service] [  restartedMain] c.e.d.DiscoveryServiceApplication        : Starting DiscoveryServiceApplication using Java 21.0.10 with PID 22756 (E:\ecommerce-distributed-system\services\discovery-service\target\classes started by fpt in E:\ecommerce-distributed-system\services\discovery-service)
+2026-06-04T17:08:23.857+07:00  INFO 22756 --- [discovery-service] [  restartedMain] c.e.d.DiscoveryServiceApplication        : No active profile set, falling back to 1 default profile: "default"
+2026-06-04T17:08:23.861+07:00 DEBUG 22756 --- [discovery-service] [  restartedMain] o.s.boot.SpringApplication               : Loading source class com.ecommerce.discovery.DiscoveryServiceApplication
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 65536 bytes. Error detail: Failed to commit metaspace.
+# An error report file with more information is saved as:
+# E:\ecommerce-distributed-system\services\discovery-service\hs_err_pid22756.log
+[3.188s][warning][os] Loading hsdis library failed
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  13.909 s
+[INFO] Finished at: 2026-06-04T17:08:23+07:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.4.5:run (default-cli) on project discovery-service: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
