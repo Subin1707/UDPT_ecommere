@@ -34,3 +34,6 @@ management:
     web:
       exposure:
         include: "*"
+
+product-service:
+  url: ${PRODUCT_SERVICE_URL:http://localhost:8082}

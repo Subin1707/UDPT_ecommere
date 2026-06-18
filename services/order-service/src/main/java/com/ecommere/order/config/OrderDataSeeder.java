@@ -44,6 +44,7 @@ public class OrderDataSeeder implements CommandLineRunner {
         Order order = new Order();
         order.setProductId(productId);
         order.setQuantity(quantity);
+        order.setCustomerId("DEMO-SEED");
         order.setCustomerName(customerName);
         order.setStatus(status);
         order.setCreatedAt(createdAt);

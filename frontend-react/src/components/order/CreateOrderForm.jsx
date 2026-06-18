@@ -2,7 +2,7 @@ import { ChevronRight, ClipboardList, MapPin, PackageCheck, Phone, Plus, RadioTo
 import { useEffect, useMemo, useState } from "react";
 import { formatCurrency } from "../../utils/formatCurrency.js";
 
-export default function CreateOrderForm({ products, selectedProduct, selectedQuantity = 1, onSubmit }) {
+export default function CreateOrderForm({ products, selectedProduct, selectedQuantity = 1, customerName = "Customer", onSubmit }) {
   const [productId, setProductId] = useState(String(selectedProduct?.id ?? products[0]?.id ?? ""));
   const [quantity, setQuantity] = useState(Number(selectedQuantity) || 1);
 
@@ -65,12 +65,12 @@ export default function CreateOrderForm({ products, selectedProduct, selectedQua
               Tên khách hàng
               <div className="input-icon">
                 <UserRound size={17} />
-                <input name="customerName" defaultValue="Nguyen Van A" required />
+                <input name="customerName" value={customerName || "Customer"} readOnly />
               </div>
             </label>
             <label>
               Số lượng
-              <input name="quantity" type="number" min="1" max={stock || undefined} value={quantity} onChange={(event) => setQuantity(event.target.value)} required />
+              <input name="quantity" type="number" min="1" max={stock || undefined} value={quantity} onChange={(event) => setQuantity(Number(event.target.value))} required />
             </label>
           </div>
 
@@ -78,7 +78,7 @@ export default function CreateOrderForm({ products, selectedProduct, selectedQua
             Địa chỉ nhận hàng
             <div className="input-icon">
               <MapPin size={17} />
-              <input name="address" placeholder="12 Nguyễn Trãi, Quận 1" />
+              <input name="address" placeholder="12 Nguyễn Trãi, Quận 1" required />
             </div>
           </label>
 
@@ -86,7 +86,7 @@ export default function CreateOrderForm({ products, selectedProduct, selectedQua
             Số điện thoại
             <div className="input-icon">
               <Phone size={17} />
-              <input name="phone" placeholder="0901234567" />
+              <input name="phone" placeholder="0901234567" pattern="[0-9]{10,11}" required title="Nhập số điện thoại 10-11 chữ số" />
             </div>
           </label>
 

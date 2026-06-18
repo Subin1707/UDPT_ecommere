@@ -5,12 +5,11 @@ import { landingScreenForRole } from "../utils/constants.js";
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(authService.getStoredUser);
+  const [currentUser, setCurrentUser] = useState(() => authService.getStoredUser());
 
   async function login({ username, password, remember }) {
     const session = await authService.login({ username, password });
-    if (remember) authService.persist(session);
-    else authService.clear();
+    authService.persist(session, remember);
     setCurrentUser(session.user);
     return session.user;
   }

@@ -33,9 +33,23 @@ function canAccess(screen, role) {
   return (routeGroups[role] ?? []).some(([key]) => key === screen);
 }
 
-function loadCartItems() {
+function customerNameFor(user) {
+  return [user?.fullName, user?.displayName, user?.username]
+    .map((value) => String(value ?? "").trim())
+    .find(Boolean) ?? "Customer";
+}
+
+function customerIdFor(user) {
+  return user?.id ? String(user.id) : "";
+}
+
+function cartStorageKey(user) {
+  return user?.id ? `ecommerce_cart_${user.id}` : "ecommerce_cart_guest";
+}
+
+function loadCartItemsByKey(key) {
   try {
-    const raw = localStorage.getItem("ecommerce_cart");
+    const raw = localStorage.getItem(key);
     const parsed = raw ? JSON.parse(raw) : [];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
@@ -66,7 +80,8 @@ export default function AppRoutes() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingOrder, setEditingOrder] = useState(null);
   const [notice, setNotice] = useState("");
-  const [cartItems, setCartItems] = useState(loadCartItems);
+  const [cartKey, setCartKey] = useState(() => cartStorageKey(currentUser));
+  const [cartItems, setCartItems] = useState(() => loadCartItemsByKey(cartStorageKey(currentUser)));
 
   const selectedProduct = products.find((item) => item.id === selectedProductId) ?? products[0] ?? null;
   const selectedDelivery = deliveries.find((item) => item.id === selectedDeliveryId) ?? deliveries[0];
@@ -103,11 +118,16 @@ export default function AppRoutes() {
     time: event.createdAt
   })), [notifications]);
 
-  async function refreshData() {
+  async function refreshData(userOverride = currentUser) {
+    const activeUser = userOverride;
     const results = await Promise.allSettled([
       productService.getAll(),
       categoryService.getAll(),
-      orderService.getAll(),
+      activeUser?.role === ROLES.CUSTOMER
+        ? customerIdFor(activeUser)
+          ? orderService.getByCustomerId(customerIdFor(activeUser))
+          : Promise.resolve([])
+        : orderService.getAll(),
       shippingService.getAll(),
       productService.health(),
       orderService.health(),
@@ -142,8 +162,14 @@ export default function AppRoutes() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("ecommerce_cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+    localStorage.setItem(cartKey, JSON.stringify(cartItems));
+  }, [cartItems, cartKey]);
+
+  useEffect(() => {
+    const nextCartKey = cartStorageKey(currentUser);
+    setCartKey(nextCartKey);
+    setCartItems(loadCartItemsByKey(nextCartKey));
+  }, [currentUser?.id]);
 
   useEffect(() => {
     if (!canAccess(screen, currentUser?.role)) {
@@ -162,6 +188,7 @@ export default function AppRoutes() {
       });
       setUsers(await authService.getUsers());
       setNotice(`Đăng nhập thành công với vai trò ${user.role}.`);
+      await refreshData(user);
       setScreen(landingScreenForRole(user.role));
     } catch (error) {
       setNotice(error.message);
@@ -182,6 +209,7 @@ export default function AppRoutes() {
       });
       setUsers(await authService.getUsers());
       setNotice(`Đăng ký thành công với vai trò ${user.role}.`);
+      await refreshData(user);
       setScreen(landingScreenForRole(user.role));
     } catch (error) {
       setNotice(error.message);
@@ -203,10 +231,39 @@ export default function AppRoutes() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const productId = Number(form.get("productId"));
+    const customerId = customerIdFor(currentUser);
+    const customerName = customerNameFor(currentUser);
+    const address = form.get("address");
+    const phone = form.get("phone");
+
+    if (!customerId) {
+      setNotice("Khong xac dinh duoc tai khoan khach hang. Vui long dang nhap lai.");
+      return;
+    }
+
+    if (!productId) {
+      setNotice("Vui long chon san pham truoc khi tao don.");
+      return;
+    }
+
+    if (!address || address.trim() === "") {
+      setNotice("Vui long nhap dia chi nhan hang.");
+      return;
+    }
+
+    if (!phone || phone.trim() === "") {
+      setNotice("Vui long nhap so dien thoai.");
+      return;
+    }
+
+    try {
     const order = await orderService.create({
       productId,
       quantity: Number(form.get("quantity")),
-      customerName: form.get("customerName")
+      customerId,
+      customerName,
+      address,
+      phone
     });
     if (Number(checkoutCartProductId) === productId) {
       setCartItems((items) => items.filter((item) => Number(item.productId) !== productId));
@@ -215,6 +272,19 @@ export default function AppRoutes() {
     setNotice(`Đã tạo order #${order.id}. Kafka sẽ gửi sang Notification và Shipping.`);
     await refreshData();
     setScreen("trackOrder");
+    } catch (error) {
+      if (error.message === "OUT_OF_STOCK") {
+        setNotice("San pham da het hang.");
+      } else if (error.message === "INVENTORY_LOCKED") {
+        setNotice("Hang dang duoc lock. Vui long thu lai sau.");
+      } else if (error.message.includes("address") || error.message.includes("Address")) {
+        setNotice("Dia chi nhan hang khong hop le.");
+      } else if (error.message.includes("phone") || error.message.includes("Phone")) {
+        setNotice("So dien thoai khong hop le.");
+      } else {
+        setNotice(error.message);
+      }
+    }
   }
 
   function addToCart(productId) {
@@ -451,6 +521,7 @@ export default function AppRoutes() {
     events,
     health,
     users,
+    customerName: customerNameFor(currentUser),
     editingCategory,
     editingProduct,
     editingOrder

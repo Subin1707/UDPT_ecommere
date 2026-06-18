@@ -24,10 +24,25 @@ public class InventoryController {
             @PathVariable Long productId,
             @RequestParam Integer quantity
     ) {
-
         return inventoryService.updateStock(
                 productId,
                 quantity
         );
+    }
+
+    @PostMapping("/{productId}/decrease")
+    public void decreaseStock(
+            @PathVariable Long productId,
+            @RequestParam Integer quantity
+    ) {
+        inventoryService.decreaseStock(productId, quantity);
+    }
+
+    @PostMapping("/{productId}/increase")
+    public void increaseStock(
+            @PathVariable Long productId,
+            @RequestParam Integer quantity
+    ) {
+        inventoryService.increaseStock(productId, quantity);
     }
 }

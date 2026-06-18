@@ -52,6 +52,7 @@ export default function CustomerRoutes({ screen, data, actions }) {
         products={data.products}
         selectedProduct={data.selectedProduct}
         selectedQuantity={data.selectedOrderQuantity}
+        customerName={data.customerName}
         onSubmit={actions.createOrder}
       />
     );

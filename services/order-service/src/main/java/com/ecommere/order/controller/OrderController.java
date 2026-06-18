@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,7 +32,16 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getAllOrders() {
+    public List<Order> getAllOrders(
+            @RequestParam(required = false) String customerId,
+            @RequestParam(required = false) String customerName
+    ) {
+        if (customerId != null && !customerId.isBlank()) {
+            return orderService.getOrdersByCustomerId(customerId);
+        }
+        if (customerName != null && !customerName.isBlank()) {
+            return orderService.getOrdersByCustomerName(customerName);
+        }
         return orderService.getAllOrders();
     }
 

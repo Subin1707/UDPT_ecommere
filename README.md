@@ -1,5 +1,47 @@
 # Ecommerce Distributed System
 
+## Lenh chay nhanh
+
+Chay theo thu tu duoi day tren Windows PowerShell. Cac lenh `spring-boot:run` va `npm run dev` se giu terminal dang chay, vi vay nen mo terminal rieng cho tung phan.
+
+```powershell
+# 1. Khoi dong database, Redis, Zookeeper va Kafka
+docker compose up -d
+
+# 2. Terminal moi: chay Eureka Discovery Service
+cd services\discovery-service
+.\mvnw.cmd spring-boot:run
+
+# 3. Terminal moi: chay Auth Service
+cd services\auth-service
+.\mvnw.cmd spring-boot:run
+
+# 4. Terminal moi: chay Product Service
+cd services\product-service
+.\mvnw.cmd spring-boot:run
+
+# 5. Terminal moi: chay Order Service
+cd services\order-service
+.\mvnw.cmd spring-boot:run
+
+# 6. Terminal moi: chay Notification Service
+cd services\notification-service
+.\mvnw.cmd spring-boot:run
+
+# 7. Terminal moi: chay Shipping Service
+cd services\shipping-service
+.\mvnw.cmd spring-boot:run
+
+# 8. Terminal moi, tuy chon: chay API Gateway
+cd services\api-gateway
+.\mvnw.cmd spring-boot:run
+
+# 9. Terminal moi: chay frontend
+cd frontend-react
+npm install
+npm run dev
+```
+
 He thong thuong mai dien tu phan tan duoc xay dung theo kien truc microservices. Du an gom frontend React/Vite, cac backend service Spring Boot, service discovery bang Eureka, co so du lieu PostgreSQL, cache Redis va giao tiep bat dong bo bang Kafka.
 
 ## Muc tieu de tai
@@ -499,4 +541,3 @@ npm run dev
 - Moi service backend co Maven Wrapper rieng, co the build/test doc lap.
 - Frontend dang goi truc tiep cac service qua Vite proxy; API Gateway ton tai nhung chua gom day du route cho tat ca service.
 - Worktree co the phat sinh cac file log khi chay service; nen them rule ignore cho `*.log`, `hs_err_pid*.log`, `replay_pid*.log`, `node_modules/` va `dist/` neu chua co.
-
